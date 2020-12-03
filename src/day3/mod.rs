@@ -2,12 +2,15 @@ use fnv::FnvHashMap;
 use std::collections::HashMap;
 use std::convert::From;
 
+/// Wrapper type for coordinates (X, Y)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Coord(usize, usize);
 
+/// Wrapper tyep for slope (X, Y) or (Run, Rise)
 #[derive(Debug, Clone, Copy)]
 pub struct Slope(usize, usize);
 
+/// This represents the two types of tiles we can have, empty or with a tree
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Tile {
     Empty,
@@ -24,6 +27,8 @@ impl From<char> for Tile {
     }
 }
 
+/// Represents the size of the provided map, we can use this to build an "infinite" representation
+/// since the map repeats itself.
 #[derive(Debug, Clone)]
 pub struct Map {
     height: usize,
@@ -32,6 +37,8 @@ pub struct Map {
 }
 
 impl Map {
+    /// Converts a &str of '.' and '#' in rows ending with new lines into a `Map`
+    /// This assumes that all rows are the same size, and does not check to verify
     pub fn from_str(input: &str) -> Self {
         let mut tiles = FnvHashMap::default();
         let mut height = 0;
@@ -53,6 +60,8 @@ impl Map {
         }
     }
 
+    /// Count the trees within the `Map` using a given slope, returning the number of trees
+    /// encountered.
     pub fn count_trees_on_slope(&self, input: &Slope) -> usize {
         let mut position = Coord(0, 0);
         let mut trees = 0;
