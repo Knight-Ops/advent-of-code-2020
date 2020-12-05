@@ -152,12 +152,12 @@ pub fn input_generator(input: &str) -> Vec<PassportData> {
 }
 
 #[aoc(day4, part1)]
-pub fn solve_part1(input: &Vec<PassportData>) -> usize {
+pub fn solve_part1(input: &[PassportData]) -> usize {
     input.iter().filter(|ppd| ppd.is_valid() == true).count()
 }
 
 #[aoc(day4, part2)]
-pub fn solve_part2(input: &Vec<PassportData>) -> usize {
+pub fn solve_part2(input: &[PassportData]) -> usize {
     input
         .iter()
         .filter(|ppd| ppd.is_valid_constrained() == true)
