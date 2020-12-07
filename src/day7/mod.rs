@@ -44,9 +44,7 @@ impl LuggageRules {
             rules.insert(bag, children);
         }
 
-        LuggageRules {
-            rules,
-        }
+        LuggageRules { rules }
     }
 
     /// Search the specified `haystack` (one specific bag rule) for the specified `needle` (one specific bag color)
@@ -65,12 +63,12 @@ impl LuggageRules {
                 let mut contents_found = false;
                 for key in bag_contents.keys() {
                     // If we find *any* bag that contains our needle, then we know everything above it contains
-                    // the needle, so we can exit early to speed up our search. We should be able to cache this 
+                    // the needle, so we can exit early to speed up our search. We should be able to cache this
                     // query to speed it up.
                     contents_found |= self.contains(needle, key);
                     if contents_found {
                         // Early return if we find *any* haystack that contains our needle
-                        return contents_found
+                        return contents_found;
                     }
                 }
                 // This is our long branch, if we don't find any needle in haystacks
@@ -87,7 +85,7 @@ impl LuggageRules {
     fn contains_cached(&self, needle: &str, haystack: &str) -> bool {
         // Check our cache before we bother walking to find the answer ourselves
         if let Some(val) = CONTENTS_CACHE.lock().unwrap().get(haystack) {
-            return *val
+            return *val;
         }
 
         // Get the bag rule associated with haystack, this should never fail unless you search
@@ -102,25 +100,30 @@ impl LuggageRules {
                 let mut contents_found = false;
                 for key in bag_contents.keys() {
                     // If we find *any* bag that contains our needle, then we know everything above it contains
-                    // the needle, so we can exit early to speed up our search. We should be able to cache this 
+                    // the needle, so we can exit early to speed up our search. We should be able to cache this
                     // query to speed it up.
                     contents_found |= self.contains_cached(needle, key);
                     if contents_found {
                         // Early return if we find *any* haystack that contains our needle
                         // Throw the solution into our cache before we exit
-                        CONTENTS_CACHE.lock().unwrap().insert(key.into(), contents_found);
-                        return contents_found
+                        CONTENTS_CACHE
+                            .lock()
+                            .unwrap()
+                            .insert(key.into(), contents_found);
+                        return contents_found;
                     }
                 }
                 // This is our long branch, if we don't find any needle in haystacks
                 // Throw the solution into our cache before we exit
-                CONTENTS_CACHE.lock().unwrap().insert(haystack.into(), contents_found);
+                CONTENTS_CACHE
+                    .lock()
+                    .unwrap()
+                    .insert(haystack.into(), contents_found);
                 contents_found
             }
         } else {
             unreachable!("Hashmap should contain all possible searches")
         }
-
     }
 
     /// Calculates the number of bags **INCLUDING THE TOP BAG** that the provided needle contains (including itself)
@@ -151,7 +154,7 @@ impl LuggageRules {
     fn size_cached(&self, needle: &str) -> usize {
         // Check our cache before we bother walking to find the answer ourselves
         if let Some(size) = SIZE_CACHE.lock().unwrap().get(needle) {
-            return *size
+            return *size;
         }
 
         // Get our bag, this should only ever fial if you query for a bag that doesn't exist in the ruleset
@@ -225,4 +228,3 @@ pub fn solve_part2_cached(input: &LuggageRules) -> usize {
     // We subtract 1 here because we don't want to count our outer-most bag
     input.size_cached(search_bag) - 1
 }
-
