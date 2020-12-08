@@ -1,7 +1,7 @@
 use fnv::FnvHashMap;
 use regex::Regex;
-use std::collections::HashMap;
-use std::fmt;
+// use std::collections::HashMap;
+// use std::fmt;
 use std::sync::Mutex;
 
 lazy_static! {

@@ -1,6 +1,6 @@
 use fnv::FnvHashMap;
 use regex::Regex;
-use std::collections::HashMap;
+// use std::collections::HashMap;
 
 lazy_static! {
     static ref BOARDING_PASS: Regex = Regex::new(r"([FB]{7})([LR]{3})").unwrap();
@@ -89,7 +89,7 @@ pub fn solve_part2(input: &[BoardingPass]) -> usize {
         // We only have a list of everyone else's boarding passes, so we don't know where the hole is
         // we need to modify the requirements to a - 2/-1 instead of a +1/-1 that way we know we can find the seat
         // with the data we actually have
-        .find(|(key, val)| {
+        .find(|(key, _)| {
             seat_map.get(&(*key - 2)).is_some() && seat_map.get(&(*key - 1)).is_none()
         })
         // At this point we should have the key-value pair that we need

@@ -1,5 +1,5 @@
-use fnv::{FnvHashMap, FnvHashSet};
-use std::collections::HashSet;
+use fnv::FnvHashMap;
+// use std::collections::HashSet;
 
 /// Holds customs information for a single group of people
 #[derive(Debug, Clone, Default)]

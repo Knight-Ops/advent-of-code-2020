@@ -1,5 +1,5 @@
 use fnv::FnvHashMap;
-use std::collections::HashMap;
+// use std::collections::HashMap;
 use std::convert::From;
 
 /// Wrapper type for coordinates (X, Y)
