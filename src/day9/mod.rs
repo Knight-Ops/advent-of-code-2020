@@ -2,11 +2,6 @@ use std::collections::VecDeque;
 
 use factorial::Factorial;
 use fnv::{FnvHashMap, FnvHashSet};
-use regex::Regex;
-
-// lazy_static! {
-//     static ref INSTRUCTIONS: Regex = Regex::new(r"(\w{3}) ([+-]\d+)").unwrap();
-// }
 
 static WINDOW_SIZE: usize = 25;
 static mut PART_1: u64 = 0;
