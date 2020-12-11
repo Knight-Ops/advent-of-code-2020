@@ -62,14 +62,16 @@ pub fn solve_part1_iter(input: &[u64]) -> u64 {
     diffs[0] * diffs[2]
 }
 
-pub fn count_chains_cached(adapters: &[u64], index: usize, cache: &mut FnvHashMap<usize, u64>) -> u64 {
+pub fn count_chains_cached(
+    adapters: &[u64],
+    index: usize,
+    cache: &mut FnvHashMap<usize, u64>,
+) -> u64 {
     if index >= adapters.len() - 1 {
         1
-    } 
-    else if let Some(cache_hit) = cache.get(&index) {
+    } else if let Some(cache_hit) = cache.get(&index) {
         *cache_hit
-    }
-    else {
+    } else {
         let val = adapters
             .iter()
             .skip(index + 1)
@@ -109,17 +111,16 @@ pub fn solve_part2_mask(input: &[u64]) -> u64 {
 
     adapters.push(adapters.last().unwrap() + 3);
 
-    let mut mask = vec!(0; *adapters.last().unwrap() as usize + 1);
+    let mut mask = vec![0; *adapters.last().unwrap() as usize + 1];
     for i in adapters {
         mask[i as usize] = 1;
     }
 
     (0..max).rev().for_each(|v| {
         if mask[v as usize] > 0 {
-            mask[v as usize] = mask[v as usize+1] + mask[v as usize +2] + mask[v as usize +3];
+            mask[v as usize] = mask[v as usize + 1] + mask[v as usize + 2] + mask[v as usize + 3];
         }
     });
 
     mask[0]
 }
-
