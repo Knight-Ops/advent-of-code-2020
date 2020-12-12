@@ -149,11 +149,9 @@ impl Boat {
         if degrees < 0 {
             rotation = Rotation::Left;
             turns = degrees.abs() as usize / 90;
-            println!("Turning Left {} time(s)", turns);
         } else if degrees > 0 {
             rotation = Rotation::Right;
             turns = degrees.abs() as usize / 90;
-            println!("Turning Right {} time(s)", turns);
         } else {
             return
         }
