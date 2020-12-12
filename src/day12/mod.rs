@@ -149,27 +149,26 @@ impl Boat {
         if degrees < 0 {
             rotation = Rotation::Left;
             turns = degrees.abs() as usize / 90;
-
+            println!("Turning Left {} time(s)", turns);
         } else if degrees > 0 {
             rotation = Rotation::Right;
             turns = degrees.abs() as usize / 90;
+            println!("Turning Right {} time(s)", turns);
         } else {
             return
         }
 
-        println!(" Turns : {}", turns);
-
         for _ in 0..turns {
             match rotation {
                 Rotation::Right => {
-                    let tmp = self.waypoint_y_location;
+                    let tmp = self.waypoint_x_location;
 
                     self.waypoint_x_location = self.waypoint_y_location;
                     self.waypoint_y_location = -tmp;
 
                 },
                 Rotation::Left => {
-                    let tmp = self.waypoint_y_location;
+                    let tmp = self.waypoint_x_location;
 
                     self.waypoint_x_location = -self.waypoint_y_location;
                     self.waypoint_y_location = tmp;
@@ -177,7 +176,6 @@ impl Boat {
                 }
             }
         }
-
 
     }
 
@@ -206,6 +204,5 @@ pub fn solve_part2_naive(input: &[Instruction]) -> usize {
     for instr in input {
         boat.run_waypoint(instr);
     }
-    // 95233 too high
     boat.get_manhattan_distance()
 }
