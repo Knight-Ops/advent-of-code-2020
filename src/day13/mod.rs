@@ -1,6 +1,7 @@
 
 use fnv::{FnvHashMap, FnvHashSet, FnvHasher};
 use regex::Regex;
+use rayon::prelude::*;
 
 #[derive(Debug, Clone)]
 pub struct Schedule {
@@ -22,6 +23,55 @@ impl Schedule {
                 false
             }
         }
+    }
+
+    fn compute_n(&self) -> usize {
+        self.bus_options.iter().filter(|x| **x != 0).product()
+    }
+
+    fn compute_yi(&self, n: usize) -> Vec<usize> {
+        self.bus_options.iter().map(|val| {
+            if *val == 0 {
+                0
+            } else {
+                n / val
+            }
+        }).collect()
+    }
+
+    fn compute_zi(&self, yi: &Vec<usize>) -> Vec<usize> {
+        self.bus_options.iter().zip(yi).map(|(ni, yi)| {
+            if *ni == 0 {
+                0
+            } else {
+                let mut zi = 1;
+
+                while (yi * zi) % ni != 1 {
+                    zi += 1;
+                }
+
+                zi
+            }
+        }).collect()
+    }
+
+    fn compute_x(&self, yi: &Vec<usize>, zi: &Vec<usize>) -> usize {
+        yi.iter().zip(zi).enumerate().filter(|(_ , (yx, zx))| **yx != 0).map(|(idx, (yx, zx))| {
+            idx * yx * zx
+        }).sum()
+    }
+
+    fn crt(&self) -> usize {
+        let n = self.compute_n();
+        let yi = self.compute_yi(n);
+        let zi = self.compute_zi(&yi);
+        self.compute_x(&yi, &zi) % n
+    }
+
+    pub fn get_first_unique_crt_solution(&self) -> usize {
+        let n = self.compute_n();
+
+        n - self.crt()
     }
 }
 
@@ -56,30 +106,83 @@ pub fn solve_part1_naive(input: &Schedule) -> usize {
     answer
 }
 
-#[aoc(day13, part2, naive)]
-pub fn solve_part2_naive(input: &Schedule) -> usize {
-    let mut value = 0;
-    // let mut value = 121977133361619;
-    let mut max_bus = 0;
-    let mut max_idx = 0;
-    for (idx, bus) in input.bus_options.iter().enumerate() {
-        if *bus > max_bus {
-            max_bus = *bus;
-            max_idx = idx;
-        }
-    }
+// #[aoc(day13, part2, naive)]
+// pub fn solve_part2_naive(input: &Schedule) -> usize {
+//     let mut value = 0;
+//     // let mut value = 121977133361619;
+//     let mut max_bus = 0;
+//     let mut max_idx = 0;
+//     for (idx, bus) in input.bus_options.iter().enumerate() {
+//         if *bus > max_bus {
+//             max_bus = *bus;
+//             max_idx = idx;
+//         }
+//     }
 
-    loop {
-        value += input.bus_options[max_idx];
+//     loop {
+//         value += input.bus_options[max_idx];
 
 
-        if (value - max_idx) % input.bus_options[0] == 0 {
-            let check = input.check_index(value - max_idx, 1);
-            if check {
-                println!("Found match!");
-                return value
-            }
-        }
+//         if (value - max_idx) % input.bus_options[0] == 0 {
+//             let check = input.check_index(value - max_idx, 1);
+//             if check {
+//                 println!("Found match!");
+//                 return value
+//             }
+//         }
 
-    }
+//     }
+// }
+
+// #[aoc(day13, part2, parallel)]
+// pub fn solve_part2_parallel(input: &Schedule) -> usize {
+//     let mut max_bus = 0;
+//     let mut max_idx = 0;
+//     for (idx, bus) in input.bus_options.iter().enumerate() {
+//         if *bus > max_bus {
+//             max_bus = *bus;
+//             max_idx = idx;
+//         }
+//     }
+
+//     let answer = std::sync::atomic::AtomicUsize::new(0);
+
+//     (0..24_usize).into_par_iter().for_each(|core| {
+//         let mut core_iter = 0;
+//         let mut value = (672600000000000 / input.bus_options[max_idx]) * input.bus_options[max_idx];
+//         loop {
+//             value += input.bus_options[max_idx] * (core + 1);
+
+
+//             if value == 672754131923874 + max_idx {
+//                 println!("Found value on core : {} | {}", core, (value - max_idx) % input.bus_options[0] == 0);
+//             }
+
+//             if core_iter % 0x8000000 == 0 {
+//                 if answer.load(std::sync::atomic::Ordering::Relaxed) != 0 {
+//                     return;
+//                 }
+//             }
+    
+//             if (value - max_idx) % input.bus_options[0] == 0 {
+//                 let check = input.check_index(value - max_idx, 1);
+//                 if check {
+//                     answer.store(value, std::sync::atomic::Ordering::SeqCst);
+//                 }
+//             }
+
+//             if core == 0 {
+//                 if core_iter % 0x8000000 == 0 {
+//                     println!("Current Core 0 Value : {}", value);
+//                 }
+//             }
+//             core_iter += 1;
+//         }
+//     });
+//     answer.into_inner()
+// }
+
+#[aoc(day13, part2, crt)]
+pub fn solve_part2_crt(input: &Schedule) -> usize {
+    input.get_first_unique_crt_solution()
 }
