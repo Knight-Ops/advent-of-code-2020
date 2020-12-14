@@ -1,11 +1,10 @@
-
 use fnv::{FnvHashMap, FnvHashSet, FnvHasher};
-use regex::Regex;
 use rayon::prelude::*;
+use regex::Regex;
 
 #[derive(Debug, Clone)]
 pub struct Schedule {
-    leave_time : usize,
+    leave_time: usize,
     bus_options: Vec<usize>,
 }
 
@@ -30,35 +29,39 @@ impl Schedule {
     }
 
     fn compute_yi(&self, n: usize) -> Vec<usize> {
-        self.bus_options.iter().map(|val| {
-            if *val == 0 {
-                0
-            } else {
-                n / val
-            }
-        }).collect()
+        self.bus_options
+            .iter()
+            .map(|val| if *val == 0 { 0 } else { n / val })
+            .collect()
     }
 
     fn compute_zi(&self, yi: &Vec<usize>) -> Vec<usize> {
-        self.bus_options.iter().zip(yi).map(|(ni, yi)| {
-            if *ni == 0 {
-                0
-            } else {
-                let mut zi = 1;
+        self.bus_options
+            .iter()
+            .zip(yi)
+            .map(|(ni, yi)| {
+                if *ni == 0 {
+                    0
+                } else {
+                    let mut zi = 1;
 
-                while (yi * zi) % ni != 1 {
-                    zi += 1;
+                    while (yi * zi) % ni != 1 {
+                        zi += 1;
+                    }
+
+                    zi
                 }
-
-                zi
-            }
-        }).collect()
+            })
+            .collect()
     }
 
     fn compute_x(&self, yi: &Vec<usize>, zi: &Vec<usize>) -> usize {
-        yi.iter().zip(zi).enumerate().filter(|(_ , (yx, zx))| **yx != 0).map(|(idx, (yx, zx))| {
-            idx * yx * zx
-        }).sum()
+        yi.iter()
+            .zip(zi)
+            .enumerate()
+            .filter(|(_, (yx, zx))| **yx != 0)
+            .map(|(idx, (yx, zx))| idx * yx * zx)
+            .sum()
     }
 
     fn crt(&self) -> usize {
@@ -77,14 +80,17 @@ impl Schedule {
 
 #[aoc_generator(day13)]
 pub fn input_generator(input: &str) -> Schedule {
-    let splits : Vec<&str> = input.split('\n').collect();
+    let splits: Vec<&str> = input.split('\n').collect();
 
     let leave_time = splits[0].parse().unwrap();
-    let bus_options = splits[1].split(',').map(|c| c.parse::<usize>().unwrap_or( 0)).collect();
+    let bus_options = splits[1]
+        .split(',')
+        .map(|c| c.parse::<usize>().unwrap_or(0))
+        .collect();
 
     Schedule {
         leave_time,
-        bus_options
+        bus_options,
     }
 }
 
@@ -100,7 +106,6 @@ pub fn solve_part1_naive(input: &Schedule) -> usize {
             min_wait = wait_time;
             answer = wait_time * bus;
         }
-
     }
 
     answer
@@ -121,7 +126,6 @@ pub fn solve_part1_naive(input: &Schedule) -> usize {
 
 //     loop {
 //         value += input.bus_options[max_idx];
-
 
 //         if (value - max_idx) % input.bus_options[0] == 0 {
 //             let check = input.check_index(value - max_idx, 1);
@@ -153,7 +157,6 @@ pub fn solve_part1_naive(input: &Schedule) -> usize {
 //         loop {
 //             value += input.bus_options[max_idx] * (core + 1);
 
-
 //             if value == 672754131923874 + max_idx {
 //                 println!("Found value on core : {} | {}", core, (value - max_idx) % input.bus_options[0] == 0);
 //             }
@@ -163,7 +166,7 @@ pub fn solve_part1_naive(input: &Schedule) -> usize {
 //                     return;
 //                 }
 //             }
-    
+
 //             if (value - max_idx) % input.bus_options[0] == 0 {
 //                 let check = input.check_index(value - max_idx, 1);
 //                 if check {

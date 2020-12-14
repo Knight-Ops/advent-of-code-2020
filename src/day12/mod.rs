@@ -1,4 +1,3 @@
-
 use fnv::{FnvHashMap, FnvHashSet, FnvHasher};
 use regex::Regex;
 
@@ -14,21 +13,51 @@ pub enum Instruction {
     West(usize),
     Left(usize),
     Right(usize),
-    Forward(usize)
+    Forward(usize),
 }
 
 impl Instruction {
     pub fn from_str(input: &str) -> Self {
-        let caps = INSTRUCTIONS.captures(input).expect("Error while capturing instruction from string");
+        let caps = INSTRUCTIONS
+            .captures(input)
+            .expect("Error while capturing instruction from string");
 
         match &caps[1] {
-            "N" => Instruction::North(caps[2].parse().expect("Error while parsing value associated with North instruction")),
-            "S" => Instruction::South(caps[2].parse().expect("Error while parsing value associated with South instruction")),
-            "E" => Instruction::East(caps[2].parse().expect("Error while parsing value associated with East instruction")),
-            "W" => Instruction::West(caps[2].parse().expect("Error while parsing value associated with West instruction")),
-            "L" => Instruction::Left(caps[2].parse().expect("Error while parsing value associated with Left instruction")),
-            "R" => Instruction::Right(caps[2].parse().expect("Error while parsing value associated with Right instruction")),
-            "F" => Instruction::Forward(caps[2].parse().expect("Error while parsing value associated with Forward instruction")),
+            "N" => Instruction::North(
+                caps[2]
+                    .parse()
+                    .expect("Error while parsing value associated with North instruction"),
+            ),
+            "S" => Instruction::South(
+                caps[2]
+                    .parse()
+                    .expect("Error while parsing value associated with South instruction"),
+            ),
+            "E" => Instruction::East(
+                caps[2]
+                    .parse()
+                    .expect("Error while parsing value associated with East instruction"),
+            ),
+            "W" => Instruction::West(
+                caps[2]
+                    .parse()
+                    .expect("Error while parsing value associated with West instruction"),
+            ),
+            "L" => Instruction::Left(
+                caps[2]
+                    .parse()
+                    .expect("Error while parsing value associated with Left instruction"),
+            ),
+            "R" => Instruction::Right(
+                caps[2]
+                    .parse()
+                    .expect("Error while parsing value associated with Right instruction"),
+            ),
+            "F" => Instruction::Forward(
+                caps[2]
+                    .parse()
+                    .expect("Error while parsing value associated with Forward instruction"),
+            ),
             _ => unreachable!("Invalid instruction in input"),
         }
     }
@@ -40,7 +69,7 @@ pub enum Direction {
     North = 0,
     East,
     South,
-    West
+    West,
 }
 
 impl From<usize> for Direction {
@@ -50,13 +79,13 @@ impl From<usize> for Direction {
             1 => Self::East,
             2 => Self::South,
             3 => Self::West,
-            _ => panic!("Invalid direction!")
+            _ => panic!("Invalid direction!"),
         }
     }
 }
 
 impl Direction {
-    fn wrapping_add(self, degrees:usize) -> Self {
+    fn wrapping_add(self, degrees: usize) -> Self {
         if degrees % 90 != 0 {
             panic!("We don't support turning in non 90 degree increments!");
         }
@@ -66,7 +95,7 @@ impl Direction {
         Direction::from(((self as u8) as usize + turns) % 4)
     }
 
-    fn wrapping_sub(self, degrees:usize) -> Self {
+    fn wrapping_sub(self, degrees: usize) -> Self {
         if degrees % 90 != 0 {
             panic!("We don't support turning in non 90 degree increments!");
         }
@@ -80,7 +109,7 @@ impl Direction {
 #[derive(Debug, Clone, Copy)]
 pub enum Rotation {
     Left,
-    Right
+    Right,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -99,7 +128,7 @@ impl Boat {
             boat_y_location: 0,
             waypoint_x_location: 10,
             waypoint_y_location: 1,
-            facing: Direction::East
+            facing: Direction::East,
         }
     }
 
@@ -110,15 +139,13 @@ impl Boat {
             Instruction::East(dist) => self.boat_x_location += *dist as isize,
             Instruction::West(dist) => self.boat_x_location -= *dist as isize,
             Instruction::Left(degrees) => self.facing = self.facing.wrapping_sub(*degrees),
-            Instruction::Right(degrees) =>self.facing = self.facing.wrapping_add(*degrees),
-            Instruction::Forward(dist) => {
-                match self.facing {
-                    Direction::North => self.run(&Instruction::North(*dist)),
-                    Direction::East =>self.run(&Instruction::East(*dist)),
-                    Direction::South =>self.run(&Instruction::South(*dist)),
-                    Direction::West =>self.run(&Instruction::West(*dist)),
-                }
-            }
+            Instruction::Right(degrees) => self.facing = self.facing.wrapping_add(*degrees),
+            Instruction::Forward(dist) => match self.facing {
+                Direction::North => self.run(&Instruction::North(*dist)),
+                Direction::East => self.run(&Instruction::East(*dist)),
+                Direction::South => self.run(&Instruction::South(*dist)),
+                Direction::West => self.run(&Instruction::West(*dist)),
+            },
         }
     }
 
@@ -129,7 +156,7 @@ impl Boat {
             Instruction::East(dist) => self.waypoint_x_location += *dist as isize,
             Instruction::West(dist) => self.waypoint_x_location -= *dist as isize,
             Instruction::Left(degrees) => self.rotate_waypoint(-(*degrees as isize)),
-            Instruction::Right(degrees) =>self.rotate_waypoint(*degrees as isize),
+            Instruction::Right(degrees) => self.rotate_waypoint(*degrees as isize),
             Instruction::Forward(dist) => {
                 for _ in 0..*dist {
                     self.boat_x_location += self.waypoint_x_location;
@@ -153,7 +180,7 @@ impl Boat {
             rotation = Rotation::Right;
             turns = degrees.abs() as usize / 90;
         } else {
-            return
+            return;
         }
 
         for _ in 0..turns {
@@ -163,18 +190,15 @@ impl Boat {
 
                     self.waypoint_x_location = self.waypoint_y_location;
                     self.waypoint_y_location = -tmp;
-
-                },
+                }
                 Rotation::Left => {
                     let tmp = self.waypoint_x_location;
 
                     self.waypoint_x_location = -self.waypoint_y_location;
                     self.waypoint_y_location = tmp;
-
                 }
             }
         }
-
     }
 
     pub fn get_manhattan_distance(&self) -> usize {

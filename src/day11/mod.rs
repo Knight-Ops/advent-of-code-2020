@@ -4,7 +4,6 @@ use factorial::Factorial;
 use fnv::{FnvHashMap, FnvHashSet, FnvHasher};
 use regex::Regex;
 
-
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Seat {
     Floor,
@@ -21,14 +20,14 @@ impl Seat {
             _ => unreachable!("Unhandled seat layout character"),
         }
     }
-    
+
     fn is_occupied(&self) -> bool {
         match self {
             Self::Occupied => true,
             _ => false,
         }
     }
-    
+
     fn is_empty(&self) -> bool {
         match self {
             Self::Empty => true,
@@ -237,7 +236,10 @@ pub fn input_generator(input: &str) -> Boat {
         for ea in [nw, n, ne, e, se, s, sw, w].iter() {
             let mut idx = 1;
             loop {
-                let view_coords = Coords(coords.0.wrapping_add(idx*ea.0 as u32), coords.1.wrapping_add(idx*ea.1 as u32));
+                let view_coords = Coords(
+                    coords.0.wrapping_add(idx * ea.0 as u32),
+                    coords.1.wrapping_add(idx * ea.1 as u32),
+                );
                 if let Some(seat) = seats.get(&view_coords) {
                     match seat {
                         Seat::Floor => idx += 1,
@@ -245,9 +247,8 @@ pub fn input_generator(input: &str) -> Boat {
                             neighbor_vec.push(view_coords);
                             break;
                         }
-                    }      
-                }
-                else {
+                    }
+                } else {
                     break;
                 }
             }
@@ -274,7 +275,7 @@ pub fn solve_part1_naive(input: &Boat) -> usize {
         }
 
         if boat.count_changes() == 0 {
-            return boat.count_occupied_seats()
+            return boat.count_occupied_seats();
         }
 
         boat.apply_update_map();
@@ -291,7 +292,7 @@ pub fn solve_part2_naive(input: &Boat) -> usize {
         }
 
         if boat.count_changes() == 0 {
-            return boat.count_occupied_seats()
+            return boat.count_occupied_seats();
         }
 
         boat.apply_update_map();
