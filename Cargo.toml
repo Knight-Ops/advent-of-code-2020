@@ -18,3 +18,4 @@ regex = "1.4.2"
 lazy_static = "1.4.0"
 fnv = "1.0.7"
 factorial = "0.2.0"
+eval = {path = "../eval"}
